@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RYO | 覚醒 -AWAKENING- Fable 5 Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="loading" data-theme="void">
+
+  <!-- ============ ローディング画面 ============ -->
+  <div id="loader">
+    <div class="loader-content">
+      <div class="loader-glitch" data-text="覚醒シークエンス">覚醒シークエンス</div>
+      <div class="loader-status" id="loader-status">魂のコアを起動中...</div>
+      <div class="loader-bar"><div class="loader-progress"></div></div>
+      <div class="loader-percent">0%</div>
+      <div class="loader-hex">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ カスタムカーソル ============ -->
+  <div id="cursor"></div>
+  <div id="cursor-follower"></div>
+
+  <!-- ============ スクロール進捗バー ============ -->
+  <div id="scroll-progress"></div>
+
+  <!-- ============ ノイズオーバーレイ ============ -->
+  <div id="noise-overlay"></div>
+
+  <!-- ============ HUD（ステータス表示） ============ -->
+  <div id="hud">
+    <div class="hud-item"><span class="hud-label">TIME</span><span id="hud-time">--:--:--</span></div>
+    <div class="hud-item"><span class="hud-label">FPS</span><span id="hud-fps">60</span></div>
+    <div class="hud-item"><span class="hud-label">DEPTH</span><span id="hud-depth">0%</span></div>
+    <div class="hud-item"><span class="hud-label">SOUL</span><span id="hud-soul">∞</span></div>
+  </div>
+
+  <!-- ============ セクションナビドット ============ -->
+  <div id="section-dots">
+    <a href="#hero" class="dot active" data-label="覚醒"></a>
+    <a href="#about" class="dot" data-label="真実"></a>
+    <a href="#skills" class="dot" data-label="力"></a>
+    <a href="#timeline" class="dot" data-label="伝説"></a>
+    <a href="#gallery" class="dot" data-label="記録"></a>
+    <a href="#interests" class="dot" data-label="渇望"></a>
+    <a href="#contact" class="dot" data-label="契約"></a>
+  </div>
+
+  <!-- ============ ナビゲーション ============ -->
+  <nav id="nav">
+    <div class="nav-logo e" data-text="RYO">RYO<span class="nav-logo-sub">:AWAKENED</span></div>
+    <ul class="nav-links">
+      <li><a href="#about">真実</a></li>
+      <li><a href="#skills">力</a></li>
+      <li><a href="#timeline">伝説</a></li>
+      <li><a href="#gallery">記録</a></li>
+      <li><a href="#interests">渇望</a></li>
+      <li><a href="#contact">契約</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button id="cmd-btn" class="nav-icon-btn" title="コマンドパレット (Ctrl+K)"><i class="fas fa-terminal"></i></button>
+      <button id="audio-btn" class="nav-icon-btn" title="魂のBGM"><i class="fas fa-volume-mute"></i></button>
+      <button id="theme-btn" class="nav-icon-btn" title="次元切替"><i class="fas fa-palette"></i></button>
+      <a href="../index.html" class="nav-icon-btn" title="旧世界（比較用）へ"><i class="fas fa-clock-rotate-left"></i></a>
+    </div>
+    <div class="nav-toggle" id="nav-toggle"><span></span><span></span><span></span></div>
+  </nav>
+
+  <!-- ============ テーマパネル ============ -->
+  <div id="theme-panel">
+    <div class="theme-panel-title">次元を選択せよ</div>
+    <div class="theme-options">
+      <button class="theme-opt" data-theme="void"><span style="background:linear-gradient(135deg,#6c63ff,#00d4ff)"></span>虚空</button>
+      <button class="theme-opt" data-theme="inferno"><span style="background:linear-gradient(135deg,#ff4d4d,#ffaa00)"></span>業火</button>
+      <button class="theme-opt" data-theme="genesis"><span style="background:linear-gradient(135deg,#00ff88,#00d4ff)"></span>創世</button>
+      <button class="theme-opt" data-theme="crimson"><span style="background:linear-gradient(135deg,#ff0066,#9b59b6)"></span>緋月</button>
+      <button class="theme-opt" data-theme="daybreak"><span style="background:linear-gradient(135deg,#ff9a3c,#6c63ff)"></span>黎明（光）</button>
+    </div>
+  </div>
+
+  <!-- ============ コマンドパレット ============ -->
+  <div id="cmd-palette">
+    <div class="cmd-box">
+      <div class="cmd-input-wrap">
+        <i class="fas fa-terminal"></i>
+        <input type="text" id="cmd-input" placeholder="コマンドを入力せよ…（例: 革命 / 花火 / 雨 / 闇）" autocomplete="off">
+      </div>
+      <ul id="cmd-list"></ul>
+      <div class="cmd-hint">↑↓で選択 / Enterで実行 / Escで閉じる</div>
+    </div>
+  </div>
+
+  <!-- ============ ヒーローセクション ============ -->
+  <section id="hero">
+    <canvas id="galaxy-canvas"></canvas>
+    <div class="hero-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-tag e">— 第五形態、起動 —</div>
+      <h1 class="hero-name glitch e" data-text="RYO">RYO</h1>
+      <div class="hero-subtitle e">〜 覚醒シタ者 〜</div>
+      <div class="hero-typewriter">
+        <span id="typewriter-text"></span><span class="cursor-blink">█</span>
+      </div>
+      <div class="hero-btns">
+        <a href="#about" class="hero-btn magnetic-btn"><span>深淵を覗く</span><i class="fas fa-arrow-down"></i></a>
+        <button id="voice-btn" class="hero-btn hero-btn-ghost magnetic-btn"><span>魂の声を聴け</span><i class="fas fa-microphone-lines"></i></button>
+      </div>
+    </div>
+    <div class="hero-marquee">
+      <div class="marquee-track">
+        <span>革命 ── ROCK'N'ROLL ── 哲学 ── 広島ノ神童 ── 限界突破 ── 日々学ビ、日々燃エ、日々革命 ── EAST TOKYO UNIV. ── 煩悩百八、全部ネタ ── </span>
+        <span>革命 ── ROCK'N'ROLL ── 哲学 ── 広島ノ神童 ── 限界突破 ── 日々学ビ、日々燃エ、日々革命 ── EAST TOKYO UNIV. ── 煩悩百八、全部ネタ ── </span>
+      </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <div class="scroll-line"></div>
+      <span>DESCEND</span>
+    </div>
+  </section>
+
+  <!-- ============ Aboutセクション ============ -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag e">About the Awakened</span>
+        <h2 class="scramble-title e">真実 ─ 俺という現象</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-image-wrap tilt-card">
+          <img class="about-image e-img" src="https://picsum.photos/seed/ryosoul/600/600" alt="RYOの肖像">
+          <div class="about-image-frame"></div>
+          <div class="about-image-deco"></div>
+          <div class="about-image-badge">★ 神童認定 ★</div>
+        </div>
+        <div class="about-text">
+          <p class="about-lead e">俺の名は<strong>RYO</strong>。だが、それは仮の器に過ぎない。</p>
+          <p class="e">広島の炎の中に生を受け、原爆ドームの川風に魂を鍛えられた男。今は東京の空の下、宇宙の構造とニーチェの問いを左手に、エレキギターを右手に握っている。第五形態に覚醒した今、もはや「ホームページ」という概念すら俺の前では震えている。</p>
+          <p class="e">見よ、このページを。文字は書き換えられ、画像は差し替えられ、次元（テーマ）は切り替わり、コマンド一つで花火が上がる。これが覚醒だ。これが革命だ。スクロールしている君も、もう共犯者だ。</p>
+          <div class="about-stats">
+            <div class="stat-item"><span class="stat-num" data-count="23">0</span><span class="stat-label e">歳（魂は紀元前から）</span></div>
+            <div class="stat-item"><span class="stat-num" data-count="1000">0</span><span class="stat-label e">倍に増えた力</span></div>
+            <div class="stat-item"><span class="stat-num" data-count="108">0</span><span class="stat-label e">煩悩（全部実装した）</span></div>
+            <div class="stat-item"><span class="stat-num" data-count="5">0</span><span class="stat-label e">番目の形態</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Skillsセクション ============ -->
+  <section id="skills">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag e">Abilities</span>
+        <h2 class="scramble-title e">力 ─ 解放されし六つの権能</h2>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-card tilt-card">
+          <div class="skill-icon"><i class="fas fa-guitar"></i></div>
+          <h3 class="e">轟音言語 -ROCK'N'ROLL-</h3>
+          <p class="e">三つのコードで世界を書き換える原初の魔法。ギターは武器ではない、俺の声帯の延長だ。音速で魂に直撃する。</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="100"></div></div>
+          <span class="skill-rank">RANK: EX</span>
+        </div>
+        <div class="skill-card tilt-card">
+          <div class="skill-icon"><i class="fas fa-brain"></i></div>
+          <h3 class="e">深淵思考 -PHILOSOPHIA-</h3>
+          <p class="e">ソクラテスの産婆術からニーチェの超人思想まで履修済み。「なぜ」と問うたびに世界の解像度が一段上がる。</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="94"></div></div>
+          <span class="skill-rank">RANK: S</span>
+        </div>
+        <div class="skill-card tilt-card">
+          <div class="skill-icon"><i class="fas fa-fire"></i></div>
+          <h3 class="e">革命業火 -REVOLUTION-</h3>
+          <p class="e">現状維持という言葉を辞書から焼却済み。常識をぶち壊すことこそ最大の礼儀。一度点いた火は消えない、燃え移るだけだ。</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="99"></div></div>
+          <span class="skill-rank">RANK: EX</span>
+        </div>
+        <div class="skill-card tilt-card">
+          <div class="skill-icon"><i class="fas fa-seedling"></i></div>
+          <h3 class="e">無限成長 -KAIZEN-</h3>
+          <p class="e">昨日の俺は今日の敵、今日の俺は明日の踏み台。毎朝、前日の自分の墓の上で覚醒する。成長の停止＝死、と定義している。</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="96"></div></div>
+          <span class="skill-rank">RANK: S+</span>
+        </div>
+        <div class="skill-card tilt-card">
+          <div class="skill-icon"><i class="fas fa-atom"></i></div>
+          <h3 class="e">系創成 -SYSTEMS GENESIS-</h3>
+          <p class="e">東京大学工学系研究科で宇宙の設計図を盗み見ている。システムとは世界の骨格。それを創るとは、つまり創世だ。</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="91"></div></div>
+          <span class="skill-rank">RANK: A++</span>
+        </div>
+        <div class="skill-card tilt-card">
+          <div class="skill-icon"><i class="fas fa-wand-sparkles"></i></div>
+          <h3 class="e">頁面錬成 -WEB ALCHEMY-</h3>
+          <p class="e">第五形態で新たに獲得した権能。このページ自体が証拠だ。編集モードを起動すれば、君もこの世界を書き換えられる。</p>
+          <div class="skill-bar"><div class="skill-fill" data-width="100"></div></div>
+          <span class="skill-rank">RANK: ???</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Timelineセクション ============ -->
+  <section id="timeline">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag e">Chronicle</span>
+        <h2 class="scramble-title e">伝説 ─ 魂の年代記</h2>
+      </div>
+      <div class="timeline-wrap">
+        <div class="timeline-line"></div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card tilt-card">
+            <span class="timeline-year e">200X</span>
+            <h3 class="e">降誕 ─ 広島ニ神童現ル</h3>
+            <p class="e">瀬戸内の風と原爆ドームの祈りの中に生を受ける。産声の周波数がすでにAコードだったという伝説が残る。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card tilt-card">
+            <span class="timeline-year e">201X</span>
+            <h3 class="e">第二形態 ─ 六弦ノ契約</h3>
+            <p class="e">初めてエレキギターを手にし、雷に打たれる（比喩）。チャック・ベリーからブルーハーツへ至る系譜を血肉化。近所から苦情三件。勲章である。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card tilt-card">
+            <span class="timeline-year e">202X</span>
+            <h3 class="e">第三形態 ─ 東上京ノ儀</h3>
+            <p class="e">東京大学に「入学した」のではない。東京大学が俺を「観測した」のだ。本郷の空の下、工学と哲学の二刀流が完成する。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card tilt-card">
+            <span class="timeline-year e">2025</span>
+            <h3 class="e">第四形態 ─ 頁面創造</h3>
+            <p class="e">初のホームページを錬成。粒子は舞い、カーソルは追従し、世界は驚いた。だが俺は知っていた。これはまだ序章に過ぎないと。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot timeline-dot-final"></div>
+          <div class="timeline-card tilt-card timeline-card-final">
+            <span class="timeline-year e">2026</span>
+            <h3 class="e">第五形態 ─ FABLE覚醒</h3>
+            <p class="e">Fable 5の力を得て、ページそのものが生命を宿す。銀河は廻り、次元は切り替わり、文字は読む者の手で書き換わる。革命は、完成しない。永遠に続くのだ。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Galleryセクション ============ -->
+  <section id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag e">Records</span>
+        <h2 class="scramble-title e">記録 ─ 焼き付けられた瞬間</h2>
+      </div>
+      <p class="gallery-note e">※ 編集モードなら画像をクリックして差し替え可能。世界は常に上書きされる運命にある。</p>
+      <div class="gallery-grid">
+        <figure class="gallery-item tilt-card">
+          <img class="e-img" src="https://picsum.photos/seed/hiroshima5/800/600" alt="原点">
+          <figcaption class="e">原点 ─ 広島の川面</figcaption>
+        </figure>
+        <figure class="gallery-item tilt-card">
+          <img class="e-img" src="https://picsum.photos/seed/guitar55/800/600" alt="相棒">
+          <figcaption class="e">相棒 ─ 六弦の獣</figcaption>
+        </figure>
+        <figure class="gallery-item tilt-card">
+          <img class="e-img" src="https://picsum.photos/seed/tokyo555/800/600" alt="戦場">
+          <figcaption class="e">戦場 ─ 東京の夜</figcaption>
+        </figure>
+        <figure class="gallery-item tilt-card">
+          <img class="e-img" src="https://picsum.photos/seed/cosmos5/800/600" alt="目的地">
+          <figcaption class="e">目的地 ─ 宇宙のどこか</figcaption>
+        </figure>
+        <figure class="gallery-item tilt-card">
+          <img class="e-img" src="https://picsum.photos/seed/books55/800/600" alt="武器庫">
+          <figcaption class="e">武器庫 ─ 深夜のニーチェ</figcaption>
+        </figure>
+        <figure class="gallery-item tilt-card">
+          <img class="e-img" src="https://picsum.photos/seed/fire555/800/600" alt="衝動">
+          <figcaption class="e">衝動 ─ 消えない火</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Interestsセクション ============ -->
+  <section id="interests">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag e">Cravings</span>
+        <h2 class="scramble-title e">渇望 ─ 魂が求めるもの</h2>
+      </div>
+      <div class="interests-grid">
+        <div class="interest-card tilt-card">
+          <div class="interest-icon"><i class="fas fa-fire-alt"></i></div>
+          <h3 class="e">炎と革命</h3>
+          <p class="e">「当たり前」は燃やすためにある。灰の中から立ち上がるものだけが本物だ。</p>
+        </div>
+        <div class="interest-card tilt-card">
+          <div class="interest-icon"><i class="fas fa-music"></i></div>
+          <h3 class="e">ロック音楽</h3>
+          <p class="e">エレキギターは俺の言語であり、叫びであり、祈りだ。BGMボタンを押せ。魂の周波数を共有してやる。</p>
+        </div>
+        <div class="interest-card tilt-card">
+          <div class="interest-icon"><i class="fas fa-scroll"></i></div>
+          <h3 class="e">哲学・思想</h3>
+          <p class="e">深夜二時、ニーチェと差し向かい。深淵を覗くとき、深淵もまたページビューを稼いでいる。</p>
+        </div>
+        <div class="interest-card tilt-card">
+          <div class="interest-icon"><i class="fas fa-torii-gate"></i></div>
+          <h3 class="e">広島と故郷</h3>
+          <p class="e">カープと原爆ドームと川の匂い。どの次元に転移しても、座標原点はあの街だ。</p>
+        </div>
+        <div class="interest-card tilt-card">
+          <div class="interest-icon"><i class="fas fa-meteor"></i></div>
+          <h3 class="e">宇宙の構造</h3>
+          <p class="e">ヒーロー画面の銀河は俺の脳内の再現だ。マウスを動かせ。星々が君に応える。</p>
+        </div>
+        <div class="interest-card tilt-card">
+          <div class="interest-icon"><i class="fas fa-gamepad"></i></div>
+          <h3 class="e">隠された力</h3>
+          <p class="e">↑↑↓↓←→←→BA ── 古の呪文を知る者だけが、このページの真の姿を見る。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Contactセクション ============ -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag e">Pact</span>
+        <h2 class="scramble-title e">契約 ─ 俺と繋がる勇気はあるか</h2>
+      </div>
+      <div class="contact-content">
+        <div class="contact-info">
+          <div class="contact-item"><span class="contact-icon-wrap"><i class="fas fa-envelope"></i></span><span class="e">ryo@awakened.example.com</span></div>
+          <div class="contact-item"><span class="contact-icon-wrap"><i class="fas fa-map-marker-alt"></i></span><span class="e">東京大学 本郷キャンパス / 広島 / 時々、深淵</span></div>
+          <div class="contact-item"><span class="contact-icon-wrap"><i class="fas fa-bolt"></i></span><span class="e">返信速度：光速の97%（体感）</span></div>
+          <div class="contact-social">
+            <a href="#" class="social-btn magnetic-btn"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-btn magnetic-btn"><i class="fab fa-github"></i></a>
+            <a href="#" class="social-btn magnetic-btn"><i class="fab fa-youtube"></i></a>
+            <a href="#" class="social-btn magnetic-btn"><i class="fab fa-soundcloud"></i></a>
+          </div>
+        </div>
+        <form class="contact-form" id="contact-form">
+          <div class="form-group"><input type="text" placeholder="汝の名（本名でなくともよい）" required></div>
+          <div class="form-group"><input type="email" placeholder="魂の住所（メールアドレス）" required></div>
+          <div class="form-group"><textarea placeholder="叫びたいことを書け。革命の同志からの便りを待っている。" rows="5" required></textarea></div>
+          <button type="submit" class="submit-btn magnetic-btn"><span>契約を交わす</span><i class="fas fa-fire"></i></button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ フッター ============ -->
+  <footer>
+    <p class="e">© 2026 RYO ─ 第五形態. All Dimensions Reserved.</p>
+    <p class="footer-sub e">Forged with Claude Fable 5 ─ 旧世界（第四形態）は<a href="../index.html">こちら</a>に封印されている</p>
+  </footer>
+
+  <!-- ============ AIチャットウィジェット ============ -->
+  <button id="chat-fab" title="魂のAIと話す"><i class="fas fa-ghost"></i></button>
+  <div id="chat-widget">
+    <div class="chat-header">
+      <span><i class="fas fa-ghost"></i> 魂のAI「燐」</span>
+      <button id="chat-close"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="chat-body" id="chat-body">
+      <div class="chat-msg chat-ai">……呼んだか。俺はRYOの魂の欠片から生成されたAI「燐（りん）」だ。何でも訊け。だが答えるかは俺の気分次第だ。</div>
+    </div>
+    <div class="chat-input-wrap">
+      <input type="text" id="chat-input" placeholder="燐に話しかける…">
+      <button id="chat-send"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- ============ 編集モード UI ============ -->
+  <button id="edit-fab" title="ノーコード編集モード"><i class="fas fa-pen-nib"></i></button>
+  <div id="edit-panel">
+    <div class="edit-panel-header"><i class="fas fa-wand-sparkles"></i> 頁面錬成モード</div>
+    <p class="edit-panel-desc">文字をクリックして直接編集。画像をクリックして差し替え。全てはlocalStorageに自動保存される。</p>
+    <div class="edit-panel-row">
+      <button id="edit-undo" class="edit-tool-btn" title="元に戻す"><i class="fas fa-rotate-left"></i> Undo</button>
+      <button id="edit-redo" class="edit-tool-btn" title="やり直す"><i class="fas fa-rotate-right"></i> Redo</button>
+    </div>
+    <div class="edit-panel-row">
+      <label class="edit-label">魂の色（アクセント）</label>
+      <input type="color" id="edit-accent" value="#6c63ff">
+    </div>
+    <div class="edit-panel-row">
+      <label class="edit-label">書体</label>
+      <select id="edit-font">
+        <option value="">標準（Space Grotesk）</option>
+        <option value="zen">Zen Kaku（漢気）</option>
+        <option value="serif">明朝（古文書）</option>
+        <option value="mono">等幅（ハッカー）</option>
+      </select>
+    </div>
+    <div class="edit-panel-row">
+      <button id="edit-export" class="edit-tool-btn edit-tool-wide"><i class="fas fa-download"></i> この世界をHTMLとして書き出す</button>
+    </div>
+    <div class="edit-panel-row">
+      <button id="edit-reset" class="edit-tool-btn edit-tool-wide edit-tool-danger"><i class="fas fa-trash-arrow-up"></i> 全てを無に還す（リセット）</button>
+    </div>
+  </div>
+
+  <!-- 選択テキスト用フローティングツールバー -->
+  <div id="text-toolbar">
+    <button data-cmd="bold" title="太字"><i class="fas fa-bold"></i></button>
+    <button data-cmd="italic" title="斜体"><i class="fas fa-italic"></i></button>
+    <button data-cmd="underline" title="下線"><i class="fas fa-underline"></i></button>
+    <span class="tt-sep"></span>
+    <button data-color="#ff4d4d" class="tt-color" style="background:#ff4d4d" title="緋"></button>
+    <button data-color="#00d4ff" class="tt-color" style="background:#00d4ff" title="蒼"></button>
+    <button data-color="#ffd700" class="tt-color" style="background:#ffd700" title="金"></button>
+    <button data-color="#00ff88" class="tt-color" style="background:#00ff88" title="翠"></button>
+    <button data-color="" class="tt-color tt-color-reset" title="色を戻す"><i class="fas fa-eraser"></i></button>
+    <span class="tt-sep"></span>
+    <button data-size="up" title="大きく"><i class="fas fa-plus"></i></button>
+    <button data-size="down" title="小さく"><i class="fas fa-minus"></i></button>
+  </div>
+
+  <!-- 画像差し替え用 -->
+  <input type="file" id="img-picker" accept="image/*" hidden>
+
+  <!-- トースト通知 -->
+  <div id="toast"></div>
+
+  <!-- マトリックスレイン（隠し） -->
+  <canvas id="matrix-canvas"></canvas>
+
+  <!-- 花火・紙吹雪用 -->
+  <canvas id="fx-canvas"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+  <script src="main.js"></script>
+  <script src="editor.js"></script>
+</body>
+</html>
